@@ -82,7 +82,7 @@ module.exports = {
     },
     displayAllHeaders: true
   },
-  base: "/docs/",
+  base: "/",
   plugins: [
     [
       "vuepress-plugin-export",

@@ -1,5 +1,22 @@
 <template>
   <header class="navbar">
+    <div class="redirect-overlay">
+      <div class="logo">
+        <img class="logotype" :src="$withBase($site.themeConfig.logo)" :alt="$siteTitle" />
+      </div>
+      <div class="redirect">
+        <span>3</span>
+        <img class="moon" :src="$withBase('/moon.svg')" alt="0" />
+        <span>2</span>
+      </div>
+      <div class="desc">
+        <span>The Crypto.com Chain documenation is now moved to <a href="https://chain.crypto.com/docs">https://chain.crypto.com/docs</a>. <br />
+        You will be redirected in {{second}} seconds.</span>
+      </div>
+      <div>
+        <a class="action-button" :href="redirectUrl">Redirect Now</a>
+      </div>
+    </div>
     <div class="inner">
       <SidebarButton @toggle-sidebar="$emit('toggle-sidebar')"/>
       <router-link
@@ -54,11 +71,29 @@ export default {
 
   data () {
     return {
-      linksWrapMaxWidth: null
+      linksWrapMaxWidth: null,
+      countDown: 10,
+      redirectUrl: 'https://chain.crypto.com/docs'
     }
   },
 
   mounted () {
+    const countDownTimer = () => {
+      if(this.countDown > 0) {
+        setTimeout(() => {
+          this.countDown -= 1;
+          countDownTimer();
+        }, 1000);
+      }
+    }
+    countDownTimer();
+
+    this.redirectUrl = this.redirectUrl + window.location.pathname + window.location.hash;
+    setTimeout(() => {
+      window.location.replace(this.redirectUrl);
+    }, 10000);
+
+    // Nav logic
     const MOBILE_DESKTOP_BREAKPOINT = 719 // refer to config.styl
     const NAVBAR_VERTICAL_PADDING = parseInt(css(this.$el, 'paddingLeft')) + parseInt(css(this.$el, 'paddingRight'))
     const handleLinksWrapWidth = () => {
@@ -80,8 +115,12 @@ export default {
 
     isAlgoliaSearch () {
       return this.algolia && this.algolia.apiKey && this.algolia.indexName
+    },
+
+    second () {
+      return this.countDown;
     }
-  }
+  },
 }
 
 function css (el, property) {
@@ -97,6 +136,53 @@ $navbar-vertical-padding = 0.7rem
 $navbar-horizontal-padding = 1.5rem
 
 $headerTextColor = #0b1426
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden
+}
+.redirect-overlay
+  position fixed
+  z-index 99
+  background #f7f9fa
+  left 0
+  top 0
+  right 0
+  bottom 0
+  height 100vh
+  padding 10rem
+  text-align center
+
+  .logo
+    margin-bottom 4rem
+  .redirect
+    display flex
+    align-items center
+    justify-content center
+    font-size 4rem
+    font-weight 600
+    img
+      height 120px
+    span
+      margin 2rem
+  .desc
+    margin 2rem 0
+  .action-button
+    display inline-block;
+    cursor pointer
+    font-size 1rem;
+    color #fff;
+    background-color $accentColor;
+    padding 0.4rem 2rem;
+    border-radius 4px;
+    transition background-color 0.1s ease;
+    box-sizing border-box;
+    border-bottom 1px solid darken($accentColor, 10%);
+
+    &:hover {
+      background-color lighten($accentColor, 10%);
+    }
 
 .navbar
   padding $navbar-vertical-padding $navbar-horizontal-padding
@@ -146,6 +232,12 @@ $headerTextColor = #0b1426
         box-shadow 0 2px 10px 4px rgba(0, 0, 0, 0.05)
 
 @media (max-width: $MQMobile)
+  .redirect-overlay
+    padding 5rem 3rem
+    .redirect
+      font-size 4rem
+      img
+        height 100px
   .navbar
     padding-left 4rem
     .desktop-hide
