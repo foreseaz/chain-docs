@@ -152,6 +152,7 @@ export default {
 
 <style lang="stylus">
 .home {
+  display: none !important;
   padding $navbarHeight+2rem 2rem 0;
   max-width $MQWide;
   margin 0px auto;

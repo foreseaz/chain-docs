@@ -116,6 +116,7 @@ export default {
 @require '../styles/config'
 $light-color = rgba(255, 255, 255, 50%)
 .footer {
+  display: none !important;
   min-height: $footerHeight;
   // width: 100%;
   padding: 28px 15px;
